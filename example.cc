@@ -251,6 +251,7 @@ Problem<dim, degree, Number>::solve()
           const double time          = t.seconds();
           const double dofs_p_second = (double)solution.size() / time;
           pcout << "Mass operator (BP1) time: " << time
+                << " DoFs: " << solution.size()
                 << " MDoFs/s: " << dofs_p_second / 1e6 << std::endl;
         }
     }
@@ -281,6 +282,7 @@ Problem<dim, degree, Number>::solve()
           const double time          = t.seconds();
           const double dofs_p_second = (double)solution.size() / time;
           pcout << "Laplace operator (BP3) time: " << time
+                << " DoFs: " << solution.size()
                 << " MDoFs/s: " << dofs_p_second / 1e6 << std::endl;
         }
     }
