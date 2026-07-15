@@ -244,7 +244,7 @@ Problem<dim, degree, Number>::solve()
       mf_data.initialize_dof_vector(rhs);
       rhs = 1.0;
 
-      for (unsigned int c = 0; c < 5; ++c)
+      for (unsigned int c = 0; c < 3; ++c)
         {
           Kokkos::Timer t;
           mass_operator.vmult(solution, rhs);
@@ -275,7 +275,7 @@ Problem<dim, degree, Number>::solve()
       mf_data.initialize_dof_vector(solution);
       mf_data.initialize_dof_vector(rhs);
 
-      for (unsigned int c = 0; c < 5; ++c)
+      for (unsigned int c = 0; c < 3; ++c)
         {
           Kokkos::Timer t;
           laplace_operator.vmult(solution, rhs);
