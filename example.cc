@@ -38,6 +38,11 @@
 
 using namespace dealii;
 
+// You can switch to numbers::invalid_unsigned int to let
+// Kokkos decide on the team size, but 32 seems to be signifcantly
+// better on the devices tested.
+const unsigned int device_team_size = 32;
+
 // Mass Operator
 
 template <int dim, int degree, typename Number, int n_q_points_1d>
@@ -226,7 +231,7 @@ Problem<dim, degree, Number>::solve()
         additional_data;
       additional_data.mapping_update_flags = update_values | update_JxW_values;
       if (Kokkos::device_id() != -1)
-        additional_data.team_size = 32;
+        additional_data.team_size = device_team_size;
       mf_data.reinit(mapping, dof, constraints, quad, additional_data);
 
       PortableMFMassOperator<dim, degree> mass_operator(mf_data);
@@ -257,7 +262,7 @@ Problem<dim, degree, Number>::solve()
         additional_data;
       additional_data.mapping_update_flags = update_gradients;
       if (Kokkos::device_id() != -1)
-        additional_data.team_size = 32;
+        additional_data.team_size = device_team_size;
       mf_data.reinit(mapping, dof, constraints, quad, additional_data);
 
       PortableMFLaplaceOperator<dim, degree> laplace_operator(mf_data);
@@ -284,7 +289,7 @@ template <int dim, int degree, typename Number>
 void
 Problem<dim, degree, Number>::run()
 {
-  //  pcout << std::setprecision(10);
+  pcout << std::setprecision(10);
   pcout << "Running on " << Utilities::MPI::n_mpi_processes(MPI_COMM_WORLD)
         << " MPI ranks and " << MultithreadInfo::n_threads() << " threads in "
 #ifdef DEBUG
