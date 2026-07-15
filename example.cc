@@ -159,7 +159,7 @@ template <int dim, int degree, typename Number = double>
 class Problem
 {
 public:
-  Problem();
+  Problem(unsigned int problem_number);
 
   void
   run();
@@ -174,6 +174,7 @@ private:
   void
   solve();
 
+  unsigned int problem_number;
 
   parallel::distributed::Triangulation<dim> tria;
 
@@ -191,8 +192,9 @@ private:
 
 
 template <int dim, int degree, typename Number>
-Problem<dim, degree, Number>::Problem()
-  : tria(MPI_COMM_WORLD)
+Problem<dim, degree, Number>::Problem(unsigned int problem_number)
+  : problem_number(problem_number)
+  , tria(MPI_COMM_WORLD)
   , mapping(1)
   , fe(degree)
   , dof(tria)
@@ -222,7 +224,7 @@ template <int dim, int degree, typename Number>
 void
 Problem<dim, degree, Number>::solve()
 {
-  if (true)
+  if (problem_number == 0 || problem_number == 1)
     {
       Portable::MatrixFree<dim, Number> mf_data;
 
@@ -253,7 +255,7 @@ Problem<dim, degree, Number>::solve()
         }
     }
 
-  if (true)
+  if (problem_number == 0 || problem_number == 3)
     {
       Portable::MatrixFree<dim, Number> mf_data;
 
@@ -330,8 +332,98 @@ main(int argc, char **argv)
 {
   Utilities::MPI::MPI_InitFinalize mpi_initialization(argc, argv);
 
-  const unsigned int           dim    = 3;
-  const unsigned int           degree = 4;
-  Problem<dim, degree, double> problem;
-  problem.run();
+  const unsigned int dim            = 3;
+  unsigned int       degree         = 4;
+  unsigned int       problem_number = 0;
+
+  {
+    int idx = 1;
+    while (argc > idx)
+      {
+        if (argv[idx] == std::string("--degree"))
+          degree = std::atoi(argv[idx + 1]);
+        else if (argv[idx] == std::string("--bp"))
+          problem_number = std::atoi(argv[idx + 1]);
+        else
+          {
+            std::cout
+              << "Usage: " << argv[0] << " --degree <p> --bp {0|1|3}"
+              << std::endl
+              << "    to run BP1, BP3, or all (default=0) with polynomial degree <p>"
+              << std::endl;
+            return 0;
+          }
+        idx += 2;
+      }
+  }
+
+
+  switch (degree)
+    {
+      case 1:
+        {
+          Problem<dim, 1, double> problem(problem_number);
+          problem.run();
+          return 0;
+        }
+      case 2:
+        {
+          Problem<dim, 2, double> problem(problem_number);
+          problem.run();
+          return 0;
+        }
+      case 3:
+        {
+          Problem<dim, 3, double> problem(problem_number);
+          problem.run();
+          return 0;
+        }
+      case 4:
+        {
+          Problem<dim, 4, double> problem(problem_number);
+          problem.run();
+          return 0;
+        }
+      case 5:
+        {
+          Problem<dim, 5, double> problem(problem_number);
+          problem.run();
+          return 0;
+        }
+      case 6:
+        {
+          Problem<dim, 6, double> problem(problem_number);
+          problem.run();
+          return 0;
+        }
+      case 7:
+        {
+          Problem<dim, 7, double> problem(problem_number);
+          problem.run();
+          return 0;
+        }
+      case 8:
+        {
+          Problem<dim, 8, double> problem(problem_number);
+          problem.run();
+          return 0;
+        }
+      case 9:
+        {
+          Problem<dim, 9, double> problem(problem_number);
+          problem.run();
+          return 0;
+        }
+      case 10:
+        {
+          Problem<dim, 10, double> problem(problem_number);
+          problem.run();
+          return 0;
+        }
+      default:
+        {
+          std::cout << "Invalid FE degree!" << std::endl;
+          return 1;
+        }
+    }
 }
