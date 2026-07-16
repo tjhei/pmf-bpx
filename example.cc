@@ -244,7 +244,9 @@ Problem<dim, degree, Number>::solve()
       mf_data.initialize_dof_vector(rhs);
       rhs = 1.0;
 
+      // warmup:
       mass_operator.vmult(solution, rhs);
+      // then run the benchmark:
       for (unsigned int c = 0; c < 1; ++c)
         {
           Kokkos::Timer t;
@@ -277,6 +279,9 @@ Problem<dim, degree, Number>::solve()
       mf_data.initialize_dof_vector(solution);
       mf_data.initialize_dof_vector(rhs);
 
+      // warmup:
+      laplace_operator.vmult(solution, rhs);
+      // then run the benchmark:
       for (unsigned int c = 0; c < 3; ++c)
         {
           Kokkos::Timer t;
