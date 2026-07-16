@@ -41,7 +41,7 @@ using namespace dealii;
 // You can switch to numbers::invalid_unsigned int to let
 // Kokkos decide on the team size, but 32 seems to be signifcantly
 // better on the devices tested.
-const unsigned int device_team_size = 32;
+unsigned int device_team_size = -1;
 
 // Mass Operator
 
@@ -244,11 +244,13 @@ Problem<dim, degree, Number>::solve()
       mf_data.initialize_dof_vector(rhs);
       rhs = 1.0;
 
-      for (unsigned int c = 0; c < 3; ++c)
+      mass_operator.vmult(solution, rhs);
+      for (unsigned int c = 0; c < 1; ++c)
         {
           Kokkos::Timer t;
-          mass_operator.vmult(solution, rhs);
-          const double time          = t.seconds();
+          for (int i = 0; i < 10; ++i)
+            mass_operator.vmult(solution, rhs);
+          const double time          = t.seconds() / 10.0;
           const double dofs_p_second = (double)solution.size() / time;
           pcout << "Mass operator (BP1) time: " << time
                 << " DoFs: " << solution.size()
@@ -306,7 +308,7 @@ Problem<dim, degree, Number>::run()
         << "dim: " << dim << std::endl
         << "Element: Q" << degree << std::endl;
 
-  unsigned int n_refinements = 6;
+  unsigned int n_refinements = 10;
 
   for (unsigned int i = 0; i < n_refinements; ++i)
     {
@@ -346,12 +348,14 @@ main(int argc, char **argv)
           degree = std::atoi(argv[idx + 1]);
         else if (argv[idx] == std::string("--bp"))
           problem_number = std::atoi(argv[idx + 1]);
+        else if (argv[idx] == std::string("--ts"))
+          device_team_size = std::atoi(argv[idx + 1]);
         else
           {
             std::cout
-              << "Usage: " << argv[0] << " --degree <p> --bp {0|1|3}"
-              << std::endl
-              << "    to run BP1, BP3, or all (default=0) with polynomial degree <p>"
+              << "Usage: " << argv[0]
+              << " --degree <p> --bp {0|1|3} --ts <teamsize>" << std::endl
+              << "    to run BP1, BP3, or all (default=0) with polynomial degree <p>, team size -1=AUTO=default"
               << std::endl;
             return 0;
           }
