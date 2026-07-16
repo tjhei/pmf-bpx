@@ -2,6 +2,10 @@
 
 This is a simplified version of the [CEED bake-off problems](https://ceed.exascaleproject.org/bps/) using [deal.II](https://dealii.org) running on GPUs using the [Portable::MatrixFree class](https://dealii.org/developer/doxygen/deal.II/classPortable_1_1MatrixFree.html).
 
+Some initial results on an RTX 6000 Blackwell Max-Q:
+
+![BP1 throughput on RTX 6000 max-q](rtx6000.png)
+
 ## Setup
 
 1. Compile Kokkos with device support
